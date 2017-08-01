@@ -3,11 +3,18 @@ var url = require("url");
 
 var start = function(route, handle){
     var onRequest = (request, response) => {
+        var postData = "";
         var pathname = url.parse(request.url).pathname;
-        response.writeHead(200, {"Content-Type": "text/plain"});
-        var content = route(handle, pathname);
-        response.write(content);
-        response.end();
+        request.setEncoding("utf8");
+        request.addListener("data", dataChunk => {
+            postData+=dataChunk;
+            console.log("Received post-data chunk: '"
+             + dataChunk 
+             + "'.");
+        });
+        request.addListener("end", ()=>{
+            route(handle, pathname, response, postData);
+        });
         console.log("Request recieved");
     }
 
