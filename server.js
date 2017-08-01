@@ -1,17 +1,18 @@
-var User = require('./user');
-var db = require('./db');
-db.connect();
+var http = require("http");
+var url = require("url");
 
-function run() {
-    var vasya = new User("Vasya");
-    var petya = new User("Petya");
+var start = function(route, handle){
+    var onRequest = (request, response) => {
+        var pathname = url.parse(request.url).pathname;
+        response.writeHead(200, {"Content-Type": "text/plain"});
+        var content = route(handle, pathname);
+        response.write(content);
+        response.end();
+        console.log("Request recieved");
+    }
 
-    vasya.hello(petya);
-    console.log(db.getPhrase("Run successful!"));
+    http.createServer(onRequest).listen(8888);
+    console.log("Http sever started");
 }
 
-if(module.parent){
-    exports.run = run;
-}else{
-    run();  
-}
+exports.start = start;
