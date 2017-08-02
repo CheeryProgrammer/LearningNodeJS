@@ -1,7 +1,7 @@
-var route = function(handle, pathname, response, postData){
+var route = function(handle, pathname, response, request){
     if(typeof handle[pathname] === 'function')
     {
-        handle[pathname](response, postData);
+        handle[pathname](response, request);
     }
     else
     {
